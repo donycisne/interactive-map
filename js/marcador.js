@@ -5,55 +5,56 @@ marcadorModulo = (function () {
   var limites // Límites del mapa
   var infoVentana // La ventana con información
 
-    // Crea un marcador y lo muestra en el mapa
+  // Crea un marcador y lo muestra en el mapa
   function mostrarMiMarcador (ubicacion) {
-        /* Completar la función mostrarMiMarcador() para crear un marcador
-        en la posición pasada por parámetro y mostrarlo en el mapa.
-        Este marcador debe tener un título, una animación.
-        El marcador que vas a crear debe asignarse a la variable miMarcador */
+    miMarcador = new google.maps.Marker({
+      position: ubicacion,
+      map: mapa,
+      animation: google.maps.Animation.DROP,
+    })
   }
 
-    // Agrega la dirección del marcador en la lista de Lugares Intermedios
+  // Agrega la dirección del marcador en la lista de Lugares Intermedios
   function agregarDireccionMarcador (marcador) {
-        // console.log(marcador.getPosition().lat() + ',' + marcador.getPosition().lng());
+    // console.log(marcador.getPosition().lat() + ',' + marcador.getPosition().lng());
     var marcadorLatLng = new google.maps.LatLng({ lat: marcador.getPosition().lat(), lng: marcador.getPosition().lng() })
     direccionesModulo.agregarDireccion(marcador.getTitle(), marcadorLatLng)
   }
 
-    // Agrega al mapa todos los marcadores.
+  // Agrega al mapa todos los marcadores.
   function marcadoresEnMapa (marcadores, mapa) {
     for (var i = 0; i < marcadores.length; i++) {
       marcadores[i].setMap(mapa)
     }
   }
 
-    // Muestra todos los marcadores. Por ahora no la uso
+  // Muestra todos los marcadores. Por ahora no la uso
   function mostrarMarcadores (marcadores) {
     marcadoresEnMapa(marcadores, mapa)
   }
 
-    // Saca los marcadores del mapa, pero siguen en el Array marcadores.
+  // Saca los marcadores del mapa, pero siguen en el Array marcadores.
   function noMostrarMarcadores (marcadores) {
     marcadoresEnMapa(marcadores, null)
   }
 
-    // Borra todos los marcadores del mapa y del array.
+  // Borra todos los marcadores del mapa y del array.
   function borrarMarcadores (marcadores) {
     noMostrarMarcadores(marcadores)
     marcadores = []
   }
 
-    // Borra todos los marcadores del mapa y del array.
+  // Borra todos los marcadores del mapa y del array.
   function borrarMarcadoresRuta (marcadores) {
     borrarMarcadores(marcadoresRuta)
   }
 
-    // Borra todos los marcadores del mapa y del array.
+  // Borra todos los marcadores del mapa y del array.
   function borrarMarcadoresLugares (marcadores) {
     borrarMarcadores(marcadoresLugares)
   }
-    // Cuando cambia el elemento "tipoDeLugar" marco todos lugares cerca
-    // del lugar indicado por MiMarcador
+  /* Cuando cambia el elemento "tipoDeLugar" marco todos lugares cerca
+     del lugar indicado por MiMarcador */
   var tipoDeLugar = document.getElementById('tipoDeLugar')
   tipoDeLugar.addEventListener('change', function () {
     if (tipoDeLugar.value != '') {
@@ -61,9 +62,8 @@ marcadorModulo = (function () {
     }
   })
 
-    // Cuando cambia el elemento "radio" marco todos lugares cerca
-    // del lugar indicado por MiMarcador con el nuevo radio
-
+  /* Cuando cambia el elemento "radio" marco todos lugares cerca
+     del lugar indicado por MiMarcador con el nuevo radio */
   var rango = document.getElementById('radio')
   rango.addEventListener('change', function () {
     marcadorModulo.marcar()
@@ -73,7 +73,7 @@ marcadorModulo = (function () {
     mostrarValor(rango.value)
   })
 
-    // Crea marcador que al hacer click muestra la información del lugar.
+  // Crea marcador que al hacer click muestra la información del lugar.
   crearMarcador = function (lugar) {
     var icono = {
       url: lugar.icon,
@@ -106,8 +106,8 @@ marcadorModulo = (function () {
       }
     })
 
-        // Cuando haces clic sobre el marcador, muestra la foto,
-        // el nombre y la valuación del lugar si es que lo tienen.
+    /* Cuando haces clic sobre el marcador, muestra la foto,
+       el nombre y la valuación del lugar si es que lo tienen. */
     var lugarLoc = lugar.geometry.location
     google.maps.event.addListener(marcador, 'click', function () {
       streetViewModulo.fijarStreetView(lugarLoc)
@@ -116,7 +116,7 @@ marcadorModulo = (function () {
         valuacion = lugar.rating.toString()
       }
 
-            // agrega información del lugar en la ventana del marcador
+      // Agrega información del lugar en la ventana del marcador
       if (lugar.photos) {
         var url = lugar.photos[0].getUrl({
           'maxWidth': 80,
@@ -139,7 +139,7 @@ marcadorModulo = (function () {
     })
   }
 
-    // Extiende los limites a partir del lugar que se agrega
+  // Extiende los limites a partir del lugar que se agrega
   function extenderLimites (lugar) {
     if (lugar.geometry.viewport) {
       limites.union(lugar.geometry.viewport)
@@ -149,12 +149,12 @@ marcadorModulo = (function () {
     mapa.fitBounds(limites)
   }
 
-    // Creo un objeto InfoWindow que será la ventana donde se mostrará la información
-    // Cre la variable limites que contiene los límites del mapa
-    // Llamo a la funcion agregarMarcadoresClicCargarDirecciones() para que marque a los lugares
-    // cuando se hace clic en AgregarDirecciones
+  // Creo un objeto InfoWindow que será la ventana donde se mostrará la información
+  // Cre la variable limites que contiene los límites del mapa
+  /* Llamo a la funcion agregarMarcadoresClicCargarDirecciones() para que marque a los lugares
+     cuando se hace clic en AgregarDirecciones */
   function inicializar () {
-        // Muestra marcador cuando se presioná enteren el campo direccion
+    // Muestra marcador cuando se presioná enteren el campo direccion
     $('#direccion').keypress(function (e) {
       if (e.keyCode == 13) {
         marcadorModulo.mostrarMiMarcador()
@@ -163,19 +163,18 @@ marcadorModulo = (function () {
     infoVentana = new google.maps.InfoWindow()
     limites = new google.maps.LatLngBounds()
   }
-
-    // Función que devuelve true si ya se declaro la variable miMarcador
+  // Función que devuelve true si ya se declaro la variable miMarcador
   function existeMiMarcador () {
     return miMarcador != undefined
   }
 
-    // Devuelve la posicion de la variable miMarcador
+  // Devuelve la posicion de la variable miMarcador
   function damePosicion () {
     return miMarcador.getPosition()
   }
 
-    // Agrego el marcador con la ruta. Le asigna las letras correspondientes al marcador.
-    // Al hacer click en el marcador se fija el StreetView en la posición de este.
+  // Agrego el marcador con la ruta. Le asigna las letras correspondientes al marcador.
+  // Al hacer click en el marcador se fija el StreetView en la posición de este.
   function agregarMarcadorRuta (direccion, letra, esInicial) {
     borrarMarcadores(marcadoresRuta)
 
@@ -192,7 +191,6 @@ marcadorModulo = (function () {
         animation: google.maps.Animation.DROP,
         draggable: false,
         zIndex: zIndice
-
       })
       limites.extend(ubicacion)
       google.maps.event.addListener(marcador, 'click', function () {
@@ -205,8 +203,8 @@ marcadorModulo = (function () {
     mapa.fitBounds(limites)
   }
 
-    // Marca los lugares que están en el arreglo resultados y
-    // extiende los límites del mapa teniendo en cuenta los nuevos lugares
+  /* Marca los lugares que están en el arreglo resultados y
+     extiende los límites del mapa teniendo en cuenta los nuevos lugares */
   function marcarLugares (resultados, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       for (var i = 0; i < resultados.length; i++) {
@@ -216,7 +214,7 @@ marcadorModulo = (function () {
     }
   }
 
-    // Marco los lugares cerca de mi posición
+  // Marco los lugares cerca de mi posición
   function marcar () {
     borrarMarcadores(marcadores)
     console.log('lugar: ' + document.getElementById('tipoDeLugar').value)
@@ -226,7 +224,7 @@ marcadorModulo = (function () {
       miPosicion = posicionCentral
     }
     lugaresModulo.buscarCerca(miPosicion)
-        // cambio el centro del mapa a miPosicion
+    // Cambio el centro del mapa a miPosicion
     mapa.panTo(miPosicion)
   }
 
