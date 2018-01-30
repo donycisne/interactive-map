@@ -93,9 +93,61 @@ direccionesModulo = (function () {
     // dependiendo de la formaDeIr que puede ser Caminando, Auto o Bus/Subterraneo/Tren
   function calcularYMostrarRutas () {
 
-        /* Completar la función calcularYMostrarRutas , que dependiendo de la forma en que el
-         usuario quiere ir de un camino al otro, calcula la ruta entre esas dos posiciones
-         y luego muestra la ruta. */
+    var comoIr = $('#comoIr').val();
+    switch (comoIr) {
+      case 'Auto':
+        comoIr = "DRIVING";
+        break;
+      case 'Bus/Subterraneo/Tren':
+        comoIr = "TRANSIT";
+        break;
+      case 'Caminando':
+        comoIr = "WALKING";
+        break;
+      default:
+    }
+
+    var wayPoints = [];
+    var checkboxArray = document.getElementById('puntosIntermedios');
+    for (var i = 0; i < checkboxArray.length; i++) {
+      if (checkboxArray.options[i].selected) {
+        wayPoints.push({
+          location: checkboxArray[i].value,
+          stopover: true
+        });
+      }
+    }
+
+    var start = document.getElementById('desde').value;
+    var end = document.getElementById('hasta').value;
+
+    var request = {
+      origin:start,
+      destination:end,
+      waypoints: wayPoints,
+      optimizeWaypoints: true,
+      travelMode: comoIr
+    }
+
+    servicioDirecciones.route(request, function(response, status) {
+      if (status == 'OK') {
+        mostradorDirecciones.setDirections(response);
+        var route = response.routes[0];
+        var summaryPanel = document.getElementById('directions-panel');
+        summaryPanel.innerHTML = '';
+
+        // Muestra información resumida para cada ruta
+        for (var i = 0; i < route.legs.length; i++) {
+          var routeSegment = i + 1;
+          summaryPanel.innerHTML += '<b>Segmento de ruta: ' + routeSegment + '</b><br>';
+          summaryPanel.innerHTML += route.legs[i].start_address + ' hasta ';
+          summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+          summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+       }
+     } else {
+       window.alert('Directions request failed due to ' + status);
+     }
+   });
   }
 
   return {
